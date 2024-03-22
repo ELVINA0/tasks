@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Исключение папки bin
+bin/
+
+# Исключение папки obj
+obj/
