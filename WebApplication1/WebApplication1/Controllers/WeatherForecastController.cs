@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StringManipulationApp.Controllers
@@ -12,6 +14,13 @@ namespace StringManipulationApp.Controllers
             if (string.IsNullOrEmpty(inputString))
             {
                 return BadRequest("Input string cannot be empty");
+            }
+
+            // Check if the input string contains only lowercase English alphabet letters
+            string invalidCharacters = new string(inputString.Where(c => !Char.IsLetter(c) || !Char.IsLower(c) || c < 'a' || c > 'z').ToArray());
+            if (!string.IsNullOrEmpty(invalidCharacters))
+            {
+                return BadRequest($"Invalid character(s) detected: {invalidCharacters}");
             }
 
             string processedString = string.Empty;
