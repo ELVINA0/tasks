@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace StringManipulationApp.Controllers
 {
@@ -24,6 +25,19 @@ namespace StringManipulationApp.Controllers
             }
 
             string processedString = string.Empty;
+            Dictionary<char, int> charCount = new Dictionary<char, int>();
+
+            foreach (char c in inputString)
+            {
+                if (charCount.ContainsKey(c))
+                {
+                    charCount[c]++;
+                }
+                else
+                {
+                    charCount[c] = 1;
+                }
+            }
 
             if (inputString.Length % 2 == 0)
             {
@@ -50,7 +64,7 @@ namespace StringManipulationApp.Controllers
                 processedString = reversedString + inputString;
             }
 
-            return Ok(processedString);
+            return Ok(new { processedString, charCount });
         }
     }
 }
