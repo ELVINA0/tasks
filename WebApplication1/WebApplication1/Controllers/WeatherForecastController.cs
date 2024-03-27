@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace StringManipulationApp.Controllers
 {
@@ -14,7 +17,27 @@ namespace StringManipulationApp.Controllers
                 return BadRequest("Input string cannot be empty");
             }
 
+            // Check if the input string contains only lowercase English alphabet letters
+            string invalidCharacters = new string(inputString.Where(c => !Char.IsLetter(c) || !Char.IsLower(c) || c < 'a' || c > 'z').ToArray());
+            if (!string.IsNullOrEmpty(invalidCharacters))
+            {
+                return BadRequest($"Invalid character(s) detected: {invalidCharacters}");
+            }
+
             string processedString = string.Empty;
+            Dictionary<char, int> charCount = new Dictionary<char, int>();
+
+            foreach (char c in inputString)
+            {
+                if (charCount.ContainsKey(c))
+                {
+                    charCount[c]++;
+                }
+                else
+                {
+                    charCount[c] = 1;
+                }
+            }
 
             if (inputString.Length % 2 == 0)
             {
@@ -41,7 +64,7 @@ namespace StringManipulationApp.Controllers
                 processedString = reversedString + inputString;
             }
 
-            return Ok(processedString);
+            return Ok(new { processedString, charCount });
         }
     }
 }
