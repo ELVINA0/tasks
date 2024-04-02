@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace StringManipulationApp.Controllers
 {
@@ -14,8 +17,34 @@ namespace StringManipulationApp.Controllers
                 return BadRequest("Input string cannot be empty");
             }
 
-            string processedString = string.Empty;
+            // ѕровер€ем, содержит ли входна€ строка только строчные буквы английского алфавита
+            string invalidCharacters = new string(inputString.Where(c => !Char.IsLetter(c) || !Char.IsLower(c) || c < 'a' || c > 'z').ToArray());
+            if (!string.IsNullOrEmpty(invalidCharacters))
+            {
+                return BadRequest($"Invalid character(s) detected: {invalidCharacters}");
+            }
 
+            string processedString = string.Empty;
+            Dictionary<char, int> charCount = new Dictionary<char, int>();
+            List<string> substrings = new List<string>();
+
+            foreach (char c in inputString)
+            {
+                if (charCount.ContainsKey(c))
+                {
+                    charCount[c]++;
+                }
+                else
+                {
+                    charCount[c] = 1;
+                }
+            }
+
+            string vowels = "aeiouy";
+            int maxVowelSubstringLength = 0;
+            string maxVowelSubstring = "";
+
+            // Process inputString
             if (inputString.Length % 2 == 0)
             {
                 int middleIndex = inputString.Length / 2;
@@ -41,7 +70,33 @@ namespace StringManipulationApp.Controllers
                 processedString = reversedString + inputString;
             }
 
-            return Ok(processedString);
+            // Ќахождение самой длинной подстроки, начинающейс€ и заканчивающейс€ гласной буквой в processedString
+            for (int i = 0; i < processedString.Length; i++)
+            {
+                if (vowels.Contains(processedString[i]))
+                {
+                    for (int j = i + 1; j < processedString.Length; j++)
+                    {
+                        if (vowels.Contains(processedString[j]))
+                        {
+                            string substring = processedString.Substring(i, j - i + 1);
+
+                            if (substring.Length > maxVowelSubstringLength)
+                            {
+                                maxVowelSubstringLength = substring.Length;
+                                maxVowelSubstring = substring;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Ok(new
+            {
+                processedString,
+                charCount,
+                maxVowelSubstring
+            });
         }
     }
 }
